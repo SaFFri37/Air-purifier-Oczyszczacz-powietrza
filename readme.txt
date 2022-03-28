@@ -1,1 +1,0 @@
-kod programu bez komentarzy

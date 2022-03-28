@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+        <title>Air Purifier</title>
+
+        <style>
+            h2, h3, label {
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <main class="container">
+            <div class="grid">
+                <div>
+                    <hgroup>
+                        <h2>Temperature</h2>
+                        <h3 id="temperature">0.0°C</h3>
+                    </hgroup>
+                </div>
+                <div>
+                    <hgroup>
+                        <h2>Humidity</h2>
+                        <h3 id="humidity">0%</h3>
+                    </hgroup>
+                </div>
+                <div>
+                    <hgroup>
+                        <h2>Pressure</h2>
+                        <h3 id="pressure">0.0 Pa</h3>
+                    </hgroup>
+                </div>
+            </div>
+            <div class="grid">
+                <div>
+                    <hgroup>
+                        <h2>PM2.5</h2>
+                        <h3 id="pm25">0.0 mg/m<sup>3</sup></h3>
+                    </hgroup>
+                </div>
+                <div>
+                    <hgroup>
+                        <h2>Fan speed</h2>
+                        <h3 id="fanspeed">0%</h3>
+                    </hgroup>
+                </div>
+                <div>
+                    <hgroup>
+                        <h2>Mode</h2>
+                        <h3 id="mode">Auto</h3>
+                    </hgroup>
+                </div>
+            </div>
+            <button style="width: 50%; margin-left: auto; margin-right: auto;" id="modebutton">Switch mode</button>
+            <label>
+                Fan speed
+                <input type="range" min="0" max="255" value="0" id="fanslider"/>
+            </label>
+        </main>
+
+        <script>
+            $(document).ready(function() {
+                function getData() {
+                    $.ajax('/getdata', {
+                        dataType: 'text',
+                        timeout: 240,
+                        success: function (data, status, xhr) {
+                            let response = data.split(";");
+                            $("#temperature").html(response[0] + "°C");
+                            $("#humidity").html(response[1] + "%");
+                            $("#pressure").html(response[2] + " Pa");
+                            $("#pm25").html(response[3] + " mg/m<sup>3</sup>");
+                            $("#fanspeed").html(response[4] + "%");
+                            $("#mode").html(response[5]);
+                        },
+                        error: function (jqXhr, textStatus, errorMessage) { 
+                            console.error(errorMessage);
+                        }
+                    });
+                }
+
+                setInterval(getData, 250);
+
+                $("#fanslider").change(function() {
+                    $.post("/setspeed", {
+                        fanSpeed: $(this).val()
+                    });
+                });
+
+                $("#modebutton").click(function() {
+                    $.get("/switchmode");
+                });
+            });
+        </script>
+    </body>
+</html>

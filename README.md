@@ -7,3 +7,7 @@ Controlling the fan and reading data from sensors takes place via a web server a
 
 
 Kod udostępniony do dowolnego korzystania.
+
+
+Użyte biblioteki:
+https://github.com/closedcube/ClosedCube_HDC1080_Arduino
